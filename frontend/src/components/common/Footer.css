@@ -1,0 +1,300 @@
+/* ==========================================================================
+   ClientLocker - Premium Dark Navy Footer
+   ========================================================================== */
+
+.main-footer {
+  position: relative;
+  width: 100%;
+  background: var(--dark-navy);
+  color: #F2F4F7;
+  padding: 80px 24px 32px;
+  border-top: 1px solid #1D2939;
+  overflow: hidden;
+}
+
+.footer-top-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #155EEF 30%, #2970FF 70%, transparent 100%);
+  opacity: 0.8;
+}
+
+.footer-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr 1fr 1.1fr;
+  gap: 48px;
+}
+
+/* --------------------------------------------------------------------------
+   Brand Section
+   -------------------------------------------------------------------------- */
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.footer-brand-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #155EEF 0%, #0C3FA9 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(21, 94, 239, 0.3);
+}
+
+.footer-brand-name {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.footer-brand-accent {
+  color: #528BFF;
+}
+
+.footer-description {
+  color: #98A2B3;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 340px;
+  margin-bottom: 20px;
+}
+
+.footer-description strong {
+  color: #EAECF0;
+  font-weight: 600;
+}
+
+.footer-security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(21, 94, 239, 0.12);
+  border: 1px solid rgba(82, 139, 255, 0.25);
+  border-radius: var(--radius-sm);
+  color: #84ADFF;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.security-badge-icon {
+  color: var(--success-green);
+}
+
+.footer-firm-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success-green);
+  box-shadow: 0 0 8px rgba(18, 183, 106, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Links & Categories Sections
+   -------------------------------------------------------------------------- */
+.footer-heading {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  margin-bottom: 20px;
+}
+
+.footer-links-list,
+.footer-categories-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #98A2B3;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.footer-links-list a .link-arrow {
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: all 0.2s ease;
+}
+
+.footer-links-list a:hover {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.footer-links-list a:hover .link-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+  color: #528BFF;
+}
+
+.footer-categories-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #98A2B3;
+  font-size: 13.5px;
+}
+
+.footer-categories-list .cat-icon {
+  color: #528BFF;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Contact Card
+   -------------------------------------------------------------------------- */
+.footer-contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(29, 41, 57, 0.6);
+  border: 1px solid #1D2939;
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+
+.footer-contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer-contact-item .contact-icon {
+  color: #528BFF;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.footer-contact-item strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #EAECF0;
+  margin-bottom: 2px;
+}
+
+.footer-contact-item span {
+  display: block;
+  font-size: 13px;
+  color: #98A2B3;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Copyright Bar
+   -------------------------------------------------------------------------- */
+.footer-bottom {
+  width: 100%;
+  margin-top: 60px;
+  padding-top: 28px;
+  border-top: 1px solid #1D2939;
+}
+
+.footer-bottom-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-copyright {
+  color: #667085;
+  font-size: 13px;
+}
+
+.footer-bottom-notes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #667085;
+  font-size: 13px;
+}
+
+.footer-bullet {
+  color: #344054;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Design
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-footer {
+    padding: 60px 20px 28px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .footer-bottom-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 425px) {
+  .main-footer {
+    padding: 50px 16px 24px;
+  }
+
+  .footer-description {
+    max-width: 100%;
+  }
+
+  .footer-bottom-notes {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .footer-bullet {
+    display: none;
+  }
+}
