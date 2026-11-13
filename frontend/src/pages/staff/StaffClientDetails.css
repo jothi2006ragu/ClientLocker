@@ -1,0 +1,209 @@
+/* ==========================================================================
+   STAFF & AUDITOR CLIENT DETAILS STYLES
+   Theme: Modern Purplish Blue (#5145CD) + White (#FFFFFF) + Dark Navy (#1E1B4B)
+   ========================================================================== */
+
+.staff-client-details {
+  min-height: 100vh;
+  padding: 34px 40px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+}
+
+.staff-back-button {
+  padding: 10px 18px;
+  margin-bottom: 25px;
+  border: 1px solid #D8DBF8;
+  border-radius: var(--radius-md);
+  background: var(--bg-lavender);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.staff-back-button:hover {
+  background: #E0E4FC;
+  border-color: var(--border-hover);
+  color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.staff-back-button:focus-visible {
+  outline: 3px solid rgba(81, 69, 205, 0.35);
+  outline-offset: 2px;
+}
+
+.staff-client-details-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.staff-client-details-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  background: var(--bg-lavender);
+  color: var(--primary);
+  font-size: 26px;
+  font-weight: 800;
+  border: 1px solid #D8DBF8;
+}
+
+.staff-client-details-header > div:last-child {
+  min-width: 0;
+}
+
+.staff-client-details-header span {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  font-family: var(--font-heading);
+}
+
+.staff-client-details-header h1 {
+  margin: 5px 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+  overflow-wrap: anywhere;
+}
+
+.staff-client-details-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.staff-details-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.staff-details-stats > div {
+  min-width: 160px;
+  padding: 18px 22px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.staff-details-stats span,
+.staff-details-stats strong {
+  display: block;
+}
+
+.staff-details-stats span {
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.staff-details-stats strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.staff-details-stats .staff-assigned-label {
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.staff-client-details-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.staff-details-upload-column,
+.staff-details-files-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.staff-details-loading,
+.staff-details-error {
+  padding: 30px;
+  margin-top: 25px;
+  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.staff-details-loading {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.staff-details-error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+  .staff-client-details {
+    padding: 20px 16px;
+  }
+
+  .staff-client-details-header {
+    align-items: flex-start;
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .staff-client-details-header h1 {
+    font-size: 21px;
+  }
+
+  .staff-client-details-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .staff-details-stats {
+    flex-wrap: wrap;
+  }
+
+  .staff-details-stats > div {
+    flex: 1 1 130px;
+    min-width: 0;
+  }
+
+  .staff-client-details-layout {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .staff-client-details-header {
+    flex-direction: column;
+  }
+
+  .staff-details-stats > div {
+    flex-basis: 100%;
+  }
+}
