@@ -1,158 +1,215 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FolderLock, Menu, X, ArrowRight, ShieldCheck, ChevronRight } from "lucide-react";
+import {
+  ShieldCheck,
+  Menu,
+  X,
+  ArrowRight,
+  ChevronRight,
+  LogOut,
+  LayoutDashboard,
+  Sparkles
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { user, isAuthenticated, logout } = useAuth();
+
+  // Treat either an authenticated context state or a populated user
+  // as a signed-in session. The user object is maintained by AuthContext.
+  const isLoggedIn = Boolean(isAuthenticated || user);
+
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 20);
     };
 
+    handleScroll();
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  // Close the mobile drawer after route changes.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   const closeMenu = () => setMenuOpen(false);
 
-  const isActive = (path) => {
-    if (path === "/") {
-      return location.pathname === "/" && !location.hash;
+  const isActive = (path) => location.pathname === path;
+
+  const getDashboardPath = () => {
+    switch (user?.role) {
+      case "partner":
+        return "/partner/dashboard";
+      case "staff":
+        return "/staff/dashboard";
+      case "client":
+        return "/client/dashboard";
+      case "auditor":
+        return "/auditor/dashboard";
+      default:
+        return "/dashboard";
     }
-    return location.pathname === path;
   };
 
-  const handleSectionClick = (sectionId) => (e) => {
+  const handleLogout = async () => {
     closeMenu();
-    if (location.pathname === "/") {
-      e.preventDefault();
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      navigate(`/#${sectionId}`);
+
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
     }
   };
+
+  const firstName = user?.name
+    ? user.name.trim().split(/\s+/)[0]
+    : "My account";
+
+  const roleName = user?.role
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    : "";
 
   return (
-    <header className={`main-navbar ${scrolled ? "scrolled" : ""}`}>
-      <div className="navbar-container">
+    <header className={`cl-navbar ${scrolled ? "scrolled" : ""}`}>
+      <div className="cl-navbar-glow" aria-hidden="true" />
+
+      <div className="cl-navbar-container">
         {/* Brand */}
         <Link
           to="/"
-          className="navbar-brand"
+          className="cl-brand"
           onClick={closeMenu}
           aria-label="ClientLocker Home"
         >
-          <div className="navbar-brand-icon-wrapper">
-            <span className="navbar-brand-icon">
-              <FolderLock size={22} strokeWidth={2.4} />
-            </span>
-            <span className="navbar-brand-shield-dot">
-              <ShieldCheck size={10} strokeWidth={3} />
-            </span>
+          <div className="cl-brand-emblem">
+            <ShieldCheck size={20} className="cl-shield-icon" />
+            <div className="cl-brand-pulse" />
           </div>
 
-          <div className="navbar-brand-text-group">
-            <span className="navbar-brand-text">
-              Client<span className="brand-accent">Locker</span>
+          <div className="cl-brand-text-group">
+            <span className="cl-brand-title">
+              Client<span className="accent">Locker</span>
             </span>
-            <span className="navbar-brand-sub">Vaigai Vel &amp; Associates</span>
+            <span className="cl-brand-sub">
+              Vaigai Vel &amp; Associates
+            </span>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="navbar-desktop-links" aria-label="Main navigation">
+        {/* Desktop navigation */}
+        <nav className="cl-nav-links" aria-label="Main navigation">
           <Link
             to="/"
-            className={`nav-link ${isActive("/") ? "active" : ""}`}
+            className={`cl-nav-link ${isActive("/") ? "active" : ""}`}
           >
-            <span>Home</span>
-            {isActive("/") && (
-              <motion.span
-                className="nav-active-indicator"
-                layoutId="navActiveIndicator"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
-            )}
+            Home
           </Link>
+
+          <a href="/#features" className="cl-nav-link">
+            Features
+          </a>
+
+          <a href="/#security" className="cl-nav-link">
+            Security
+          </a>
+
+          <a href="/#how-it-works" className="cl-nav-link">
+            Architecture
+          </a>
 
           <Link
             to="/about"
-            className={`nav-link ${isActive("/about") ? "active" : ""}`}
+            className={`cl-nav-link ${isActive("/about") ? "active" : ""}`}
           >
-            <span>About</span>
-            {isActive("/about") && (
-              <motion.span
-                className="nav-active-indicator"
-                layoutId="navActiveIndicator"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
-            )}
-          </Link>
-
-          <a
-            href="/#features"
-            onClick={handleSectionClick("features")}
-            className="nav-link"
-          >
-            <span>Features</span>
-          </a>
-
-          <a
-            href="/#how-it-works"
-            onClick={handleSectionClick("how-it-works")}
-            className="nav-link"
-          >
-            <span>How It Works</span>
-          </a>
-
-          <a
-            href="/#contact"
-            onClick={handleSectionClick("contact")}
-            className="nav-link"
-          >
-            <span>Contact</span>
-          </a>
-
-          <div className="nav-divider" />
-
-          <Link to="/login" className="navbar-login-btn">
-            <span>Sign In</span>
-            <ArrowRight size={16} strokeWidth={2.4} className="login-btn-icon" />
+            About
           </Link>
         </nav>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          className="navbar-menu-toggle"
-          onClick={() => setMenuOpen((previous) => !previous)}
-          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-navigation"
-        >
-          {menuOpen ? <X size={22} strokeWidth={2.4} /> : <Menu size={22} strokeWidth={2.4} />}
-        </button>
+        {/* Desktop actions */}
+        <div className="cl-navbar-actions">
+          {isLoggedIn ? (
+            <div className="cl-user-pill">
+              <Link
+                to={getDashboardPath()}
+                className="cl-dashboard-link"
+                onClick={closeMenu}
+                title="Open your workspace"
+              >
+                <LayoutDashboard size={16} />
+
+                <span className="cl-user-name">
+                  {firstName}
+                </span>
+
+                {roleName && (
+                  <span className={`cl-role-badge ${user?.role || ""}`}>
+                    {roleName}
+                  </span>
+                )}
+              </Link>
+
+              <button
+                type="button"
+                className="cl-logout-btn"
+                onClick={handleLogout}
+                title="Sign out of ClientLocker"
+                aria-label="Sign out"
+              >
+                <LogOut size={15} />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            <div className="cl-auth-buttons">
+              <Link
+                to="/client/login"
+                className="cl-magic-link-btn"
+                title="Client Magic Link Login"
+              >
+                <Sparkles size={14} />
+                <span>Magic Link</span>
+              </Link>
+
+              <Link to="/login" className="btn btn-primary cl-login-btn">
+                <span>Sign In</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="cl-menu-toggle"
+            onClick={() => setMenuOpen((previous) => !previous)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {menuOpen && (
           <>
             <motion.div
-              className="navbar-backdrop"
+              className="cl-mobile-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -161,78 +218,113 @@ function Navbar() {
             />
 
             <motion.nav
-              id="mobile-navigation"
-              className="navbar-mobile-menu"
-              aria-label="Mobile navigation"
-              initial={{ opacity: 0, y: -12, scale: 0.98 }}
+              className="cl-mobile-drawer"
+              initial={{ opacity: 0, y: -20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.98 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: -15, scale: 0.98 }}
+              transition={{
+                duration: 0.22,
+                ease: [0.23, 1, 0.32, 1]
+              }}
+              aria-label="Mobile navigation"
             >
-              <div className="mobile-firm-banner">
-                <span className="mobile-firm-pill">Client Portal</span>
-                <span className="mobile-firm-name">Vaigai Vel &amp; Associates</span>
-              </div>
-
-              <div className="mobile-links-list">
+              <div className="cl-mobile-links">
                 <Link
                   to="/"
-                  className={`mobile-nav-link ${isActive("/") ? "active" : ""}`}
+                  className={`cl-mobile-link ${
+                    isActive("/") ? "active" : ""
+                  }`}
                   onClick={closeMenu}
                 >
                   <span>Home</span>
-                  <ChevronRight size={16} className="mobile-link-arrow" />
-                </Link>
-
-                <Link
-                  to="/about"
-                  className={`mobile-nav-link ${isActive("/about") ? "active" : ""}`}
-                  onClick={closeMenu}
-                >
-                  <span>About</span>
-                  <ChevronRight size={16} className="mobile-link-arrow" />
+                  <ChevronRight size={16} />
                 </Link>
 
                 <a
                   href="/#features"
-                  className="mobile-nav-link"
-                  onClick={handleSectionClick("features")}
+                  className="cl-mobile-link"
+                  onClick={closeMenu}
                 >
                   <span>Features</span>
-                  <ChevronRight size={16} className="mobile-link-arrow" />
+                  <ChevronRight size={16} />
+                </a>
+
+                <a
+                  href="/#security"
+                  className="cl-mobile-link"
+                  onClick={closeMenu}
+                >
+                  <span>Security</span>
+                  <ChevronRight size={16} />
                 </a>
 
                 <a
                   href="/#how-it-works"
-                  className="mobile-nav-link"
-                  onClick={handleSectionClick("how-it-works")}
-                >
-                  <span>How It Works</span>
-                  <ChevronRight size={16} className="mobile-link-arrow" />
-                </a>
-
-                <a
-                  href="/#contact"
-                  className="mobile-nav-link"
-                  onClick={handleSectionClick("contact")}
-                >
-                  <span>Contact</span>
-                  <ChevronRight size={16} className="mobile-link-arrow" />
-                </a>
-              </div>
-
-              <div className="mobile-login-container">
-                <Link
-                  to="/login"
-                  className="navbar-mobile-login"
+                  className="cl-mobile-link"
                   onClick={closeMenu}
                 >
-                  <span>Access Your Portal</span>
-                  <ArrowRight size={17} strokeWidth={2.4} />
+                  <span>Architecture</span>
+                  <ChevronRight size={16} />
+                </a>
+
+                <Link
+                  to="/about"
+                  className={`cl-mobile-link ${
+                    isActive("/about") ? "active" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  <span>About</span>
+                  <ChevronRight size={16} />
                 </Link>
-                <p className="mobile-login-note">
-                  Authorized access for firm clients, staff &amp; partners
-                </p>
+              </div>
+
+              <div className="cl-mobile-footer-actions">
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      to={getDashboardPath()}
+                      className="btn btn-primary"
+                      onClick={closeMenu}
+                      style={{ width: "100%" }}
+                    >
+                      <LayoutDashboard size={16} />
+                      Open {roleName || "User"} Workspace
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleLogout}
+                      style={{ width: "100%", marginTop: "8px" }}
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="btn btn-primary"
+                      onClick={closeMenu}
+                      style={{ width: "100%" }}
+                    >
+                      <span>Sign In to Portal</span>
+                      <ArrowRight size={16} />
+                    </Link>
+
+                    <Link
+                      to="/client/login"
+                      className="btn btn-secondary"
+                      onClick={closeMenu}
+                      style={{ width: "100%", marginTop: "8px" }}
+                    >
+                      <Sparkles size={16} />
+                      Client Magic Link
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.nav>
           </>
