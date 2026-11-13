@@ -1,41 +1,73 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   ShieldCheck,
   FolderLock,
+  FileText,
   Users,
   ArrowRight,
-  LockKeyhole,
-  CheckCircle,
-  Cloud,
-  FileSpreadsheet,
-  Receipt,
-  Building2,
+  Clock,
+  Sparkles,
+  Menu,
+  X,
   CheckCircle2,
-  Search,
-  KeyRound,
-  FolderTree,
-  Share2,
-  Activity,
-  Eye,
-  Shield,
-  Layers
+  Lock,
+  FileCheck,
+  Download
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import "./Home.css";
 
-// Animation variants
+// ============================================================
+// EMIL KOWALSKI ANIMATION CURVES & VARIANTS
+// ============================================================
+
+const easeOutQuart = [0.23, 1, 0.32, 1];
+
 const fadeUp = {
   hidden: {
     opacity: 0,
-    y: 35
+    y: 40,
+    filter: "blur(6px)"
   },
   visible: {
     opacity: 1,
     y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.65,
+      ease: easeOutQuart
+    }
+  }
+};
+
+const fadeLeft = {
+  hidden: {
+    opacity: 0,
+    x: -50
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
     transition: {
       duration: 0.7,
-      ease: [0.16, 1, 0.3, 1]
+      ease: easeOutQuart
+    }
+  }
+};
+
+const fadeRight = {
+  hidden: {
+    opacity: 0,
+    x: 50
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.7,
+      ease: easeOutQuart
     }
   }
 };
@@ -44,785 +76,777 @@ const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12
+      staggerChildren: 0.12,
+      delayChildren: 0.05
     }
   }
 };
 
-const cardStagger = {
+const cardContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.09
     }
   }
 };
 
+// ============================================================
+// HOME COMPONENT
+// ============================================================
+
 function Home() {
-  const [activeTab, setActiveTab] = useState("all");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const trustCards = [
-    {
-      icon: ShieldCheck,
-      title: "Secure Document Storage",
-      description:
-        "Keep important documents protected and organized with 256-bit AES encryption at rest and in transit."
-    },
-    {
-      icon: KeyRound,
-      title: "Controlled Access",
-      description:
-        "Ensure users only access the documents they are authorized to view through strict role-based permission controls."
-    },
-    {
-      icon: Layers,
-      title: "Organized Management",
-      description:
-        "Manage financial records, invoices and tax documents in one place with structured folders and quick retrieval."
-    }
-  ];
+  const location = useLocation();
 
-  const features = [
-    {
-      icon: FolderLock,
-      title: "Secure File Management",
-      description:
-        "End-to-end encrypted storage ensuring client records remain confidential, tamper-proof, and accessible only to authorized personnel.",
-      badge: "Encrypted Vault"
-    },
-    {
-      icon: Users,
-      title: "Role-Based Access",
-      description:
-        "Granular permission controls designed specifically for accounting partners, staff accountants, business clients, and external auditors.",
-      badge: "Access Governance"
-    },
-    {
-      icon: FolderTree,
-      title: "Client Document Organization",
-      description:
-        "Structure documents cleanly by financial years, tax categories, statutory audits, and corporate compliance folders.",
-      badge: "Tax Year Indexing"
-    },
-    {
-      icon: Share2,
-      title: "Private Document Sharing",
-      description:
-        "Securely exchange financial statements and confidential reports within the portal without risky email attachments.",
-      badge: "Zero-Leak Sharing"
-    },
-    {
-      icon: Activity,
-      title: "Activity Tracking",
-      description:
-        "Comprehensive, tamper-proof audit trails that record every view, upload, download, and permission change in real time.",
-      badge: "Audit Trails"
-    },
-    {
-      icon: Eye,
-      title: "Auditor Access",
-      description:
-        "Provide dedicated, scoped, read-only portals for statutory auditors and tax inspectors without exposing unrelated client records.",
-      badge: "Read-Only Portals"
-    }
-  ];
+  // Navbar scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 25);
+    };
 
-  const workflowSteps = [
-    {
-      step: "01",
-      icon: LockKeyhole,
-      title: "Secure Access",
-      description:
-        "Users sign in with their authorized credentials. Dual-factor verification ensures that only authenticated clients and firm personnel can enter."
-    },
-    {
-      step: "02",
-      icon: Cloud,
-      title: "Manage Documents",
-      description:
-        "Upload and organize client documents securely. Categorize tax returns, financial statements, and compliance audits with instant tagging."
-    },
-    {
-      step: "03",
-      icon: ShieldCheck,
-      title: "Access with Confidence",
-      description:
-        "View and manage documents according to assigned permissions. Access records knowing every file is encrypted and tracked."
-    }
-  ];
+    window.addEventListener("scroll", handleScroll, {
+      passive: true
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const closeMenu = () => setMobileMenuOpen(false);
 
   return (
-    <div className="home-page">
-      {/* ====================================================================
-          1. HERO SECTION
-          ==================================================================== */}
-      <section className="home-hero" id="home">
-        <div className="hero-background-decorations" aria-hidden="true">
-          <div className="hero-gradient-orb hero-orb-left" />
-          <div className="hero-gradient-orb hero-orb-right" />
-          <div className="hero-grid-pattern" />
-        </div>
+    <main className="home-page">
 
-        <div className="hero-container">
-          {/* Left Column: Headline, Description & CTAs */}
-          <motion.div
-            className="hero-content"
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
+      {/* =====================================================
+          1. NAVBAR
+      ===================================================== */}
+
+      <header
+        className={`main-navbar ${
+          scrolled ? "scrolled-nav" : ""
+        }`}
+      >
+        <div className="navbar-container">
+
+          {/* Brand */}
+          <Link
+            to="/"
+            className="navbar-brand"
+            onClick={closeMenu}
+            aria-label="ClientLocker Home"
           >
-            {/* Firm & Security Eyebrow */}
-            <motion.div className="hero-badge" variants={fadeUp}>
-              <span className="hero-badge-icon">
-                <ShieldCheck size={15} strokeWidth={2.4} />
-              </span>
-              <span className="hero-badge-text">
-                VAIGAI VEL &amp; ASSOCIATES &bull; SECURE CLIENT PORTAL
-              </span>
-            </motion.div>
+            <span className="navbar-brand-icon">
+              <FolderLock size={23} strokeWidth={2.2} />
+            </span>
 
-            {/* Main Headline */}
-            <motion.h1 className="hero-title" variants={fadeUp}>
-              Your Documents.
-              <span className="hero-title-highlight"> Our Priority.</span>
-            </motion.h1>
+            <span className="navbar-brand-text">
+              Client<span>Locker</span>
+            </span>
+          </Link>
 
-            {/* Supporting Description */}
-            <motion.p className="hero-description" variants={fadeUp}>
-              Manage, organize and access your important business documents through
-              one secure and reliable client portal from{" "}
-              <strong>Vaigai Vel &amp; Associates</strong>.
-            </motion.p>
-
-            {/* Action Buttons */}
-            <motion.div className="hero-buttons-group" variants={fadeUp}>
-              <Link to="/login" className="btn-primary-hero">
-                <span>Access Your Portal</span>
-                <ArrowRight size={18} strokeWidth={2.4} className="btn-arrow" />
-              </Link>
-
-              <a href="#about" className="btn-secondary-hero">
-                <span>Discover More</span>
-              </a>
-            </motion.div>
-
-            {/* Security Guarantee Message */}
-            <motion.div className="hero-security-message" variants={fadeUp}>
-              <div className="security-icon-circle">
-                <LockKeyhole size={15} strokeWidth={2.4} />
-              </div>
-              <span>Private access. Protected documents. Trusted management.</span>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Column: Modern Document Management Dashboard Illustration */}
-          <motion.div
-            className="hero-preview-wrapper"
-            initial={{ opacity: 0, scale: 0.95, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          {/* Desktop Navigation */}
+          <nav
+            className="navbar-desktop-links"
+            aria-label="Main navigation"
           >
-            {/* Ambient Background Glow */}
-            <div className="hero-preview-glow" aria-hidden="true" />
-
-            {/* Floating Security Badge (Top Right) */}
-            <motion.div
-              className="floating-security-badge"
-              animate={{
-                y: [0, -8, 0]
-              }}
-              transition={{
-                duration: 4.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+            <Link
+              to="/"
+              className={
+                location.pathname === "/" ? "active" : ""
+              }
             >
-              <div className="floating-badge-icon">
-                <ShieldCheck size={18} strokeWidth={2.4} />
-              </div>
-              <div className="floating-badge-text">
-                <strong>256-Bit AES Encryption</strong>
-                <span>Bank-grade record safety</span>
-              </div>
-            </motion.div>
+              Home
+            </Link>
 
-            {/* Floating Role Status Card (Bottom Left) */}
-            <motion.div
-              className="floating-role-card"
-              animate={{
-                y: [0, 8, 0]
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.8
-              }}
+            <Link
+              to="/about"
+              className={
+                location.pathname === "/about" ? "active" : ""
+              }
             >
-              <div className="floating-role-header">
-                <span className="role-pulse-dot" />
-                <span className="role-status-text">Authorized Role Access</span>
-              </div>
-              <p className="role-detail-text">
-                Partner &bull; Staff &bull; Client &bull; Auditor
-              </p>
-            </motion.div>
+              About
+            </Link>
 
-            {/* SaaS Dashboard Preview Window */}
-            <div className="saas-preview-window">
-              {/* Window Header */}
-              <div className="saas-window-header">
-                <div className="saas-window-dots">
-                  <span className="dot dot-close" />
-                  <span className="dot dot-minimize" />
-                  <span className="dot dot-maximize" />
-                </div>
+            <a href="#features">
+              Features
+            </a>
 
-                <div className="saas-window-search">
-                  <Search size={13} className="search-icon" />
-                  <span>Search financial records, tax documents, GST filings...</span>
-                </div>
+            <a href="#contact">
+              Contact
+            </a>
+          </nav>
 
-                <div className="saas-secure-indicator">
-                  <span className="pulse-indicator" />
-                  <span>SECURE PORTAL</span>
-                </div>
-              </div>
+          {/* Navbar Actions */}
+          <div className="navbar-actions-group">
 
-              {/* SaaS Dashboard Body */}
-              <div className="saas-dashboard-card">
-                {/* Header */}
-                <div className="saas-card-header">
-                  <div className="saas-card-title-group">
-                    <div className="saas-app-icon">
-                      <FolderLock size={22} strokeWidth={2.4} />
-                    </div>
-                    <div>
-                      <h3 className="saas-card-heading">Document Management</h3>
-                      <p className="saas-card-sub">
-                        Vaigai Vel &amp; Associates &bull; Confidential Client Repository
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="saas-status-pill">
-                    <CheckCircle2 size={13} strokeWidth={2.5} />
-                    <span>Active Protected Session</span>
-                  </span>
-                </div>
-
-                {/* Filter Tabs */}
-                <div className="saas-filter-tabs">
-                  <button
-                    type="button"
-                    className={`saas-tab ${activeTab === "all" ? "active" : ""}`}
-                    onClick={() => setActiveTab("all")}
-                  >
-                    All Documents
-                  </button>
-                  <button
-                    type="button"
-                    className={`saas-tab ${activeTab === "financial" ? "active" : ""}`}
-                    onClick={() => setActiveTab("financial")}
-                  >
-                    Financial
-                  </button>
-                  <button
-                    type="button"
-                    className={`saas-tab ${activeTab === "tax" ? "active" : ""}`}
-                    onClick={() => setActiveTab("tax")}
-                  >
-                    Tax Records
-                  </button>
-                  <button
-                    type="button"
-                    className={`saas-tab ${activeTab === "records" ? "active" : ""}`}
-                    onClick={() => setActiveTab("records")}
-                  >
-                    Business
-                  </button>
-                </div>
-
-                {/* Document Rows */}
-                <div className="saas-files-list">
-                  {/* Row 1: Financial Documents */}
-                  <motion.div
-                    className="saas-file-row"
-                    whileHover={{ x: 4, backgroundColor: "#F8FAFC" }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="saas-file-icon-box file-financial">
-                      <FileSpreadsheet size={19} strokeWidth={2.2} />
-                    </div>
-
-                    <div className="saas-file-info">
-                      <div className="saas-file-title-line">
-                        <strong className="saas-file-title">Financial Documents</strong>
-                        <span className="saas-file-tag">FY 2025-26</span>
-                      </div>
-                      <span className="saas-file-sub">
-                        Audited Balance Sheet &bull; Profit &amp; Loss Statement &bull; PDF
-                      </span>
-                    </div>
-
-                    <div className="saas-file-status">
-                      <CheckCircle className="green-check-icon" size={17} strokeWidth={2.4} />
-                      <span className="green-status-text">Verified</span>
-                    </div>
-                  </motion.div>
-
-                  {/* Row 2: Tax Documents */}
-                  <motion.div
-                    className="saas-file-row"
-                    whileHover={{ x: 4, backgroundColor: "#F8FAFC" }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="saas-file-icon-box file-tax">
-                      <Receipt size={19} strokeWidth={2.2} />
-                    </div>
-
-                    <div className="saas-file-info">
-                      <div className="saas-file-title-line">
-                        <strong className="saas-file-title">Tax Documents</strong>
-                        <span className="saas-file-tag">GST &amp; IT</span>
-                      </div>
-                      <span className="saas-file-sub">
-                        Income Tax Returns &bull; Form 16 &bull; GST Filings &bull; 12 Files
-                      </span>
-                    </div>
-
-                    <div className="saas-file-status">
-                      <CheckCircle className="green-check-icon" size={17} strokeWidth={2.4} />
-                      <span className="green-status-text">Compliant</span>
-                    </div>
-                  </motion.div>
-
-                  {/* Row 3: Business Records */}
-                  <motion.div
-                    className="saas-file-row"
-                    whileHover={{ x: 4, backgroundColor: "#F8FAFC" }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="saas-file-icon-box file-business">
-                      <Building2 size={19} strokeWidth={2.2} />
-                    </div>
-
-                    <div className="saas-file-info">
-                      <div className="saas-file-title-line">
-                        <strong className="saas-file-title">Business Records</strong>
-                        <span className="saas-file-tag">Vault</span>
-                      </div>
-                      <span className="saas-file-sub">
-                        Incorporation Certificates &bull; Board Resolutions &bull; Private
-                      </span>
-                    </div>
-
-                    <div className="saas-file-status">
-                      <CheckCircle className="green-check-icon" size={17} strokeWidth={2.4} />
-                      <span className="green-status-text">Protected</span>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* SaaS Card Footer */}
-                <div className="saas-card-footer">
-                  <div className="saas-footer-security">
-                    <ShieldCheck size={16} className="security-icon-blue" />
-                    <span>Protected document access</span>
-                  </div>
-                  <div className="saas-footer-badge">
-                    <span>256-bit AES Protected</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ====================================================================
-          2. PROFESSIONAL TRUST SECTION
-          ==================================================================== */}
-      <section className="home-trust-section" id="trust">
-        <div className="section-container">
-          <motion.div
-            className="section-header text-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-          >
-            <span className="section-eyebrow">ENTERPRISE-GRADE TRUST</span>
-            <h2 className="section-heading">
-              Your Business Documents Deserve Better Protection
-            </h2>
-            <p className="section-description">
-              Keep confidential documents organized, accessible and protected with a
-              secure document management experience.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="trust-cards-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={cardStagger}
-          >
-            {trustCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <motion.div
-                  key={card.title}
-                  className="trust-card"
-                  variants={fadeUp}
-                  whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                >
-                  <div className="trust-card-icon-container">
-                    <Icon size={26} strokeWidth={2.2} />
-                  </div>
-                  <h3 className="trust-card-title">{card.title}</h3>
-                  <p className="trust-card-text">{card.description}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-
-          {/* Trust Metrics Bar */}
-          <motion.div
-            className="trust-metrics-strip"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-          >
-            <div className="metric-item">
-              <span className="metric-number">256-Bit</span>
-              <span className="metric-label">AES Encryption Standard</span>
-            </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
-              <span className="metric-number">4-Tier</span>
-              <span className="metric-label">Role-Based Governance</span>
-            </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
-              <span className="metric-number">100%</span>
-              <span className="metric-label">Audit Trail Logging</span>
-            </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
-              <span className="metric-number">Private</span>
-              <span className="metric-label">Vaigai Vel &amp; Associates Vault</span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ====================================================================
-          3. FEATURES SECTION
-          ==================================================================== */}
-      <section className="home-features-section" id="features">
-        <div className="section-container">
-          <motion.div
-            className="section-header text-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeUp}
-          >
-            <span className="section-eyebrow">PORTAL CAPABILITIES</span>
-            <h2 className="section-heading">
-              Everything Organized. Everything Protected.
-            </h2>
-            <p className="section-description">
-              A specialized suite of document tools tailored for accounting firms,
-              client collaboration, and strict compliance standards.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="features-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={cardStagger}
-          >
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <motion.article
-                  key={feature.title}
-                  className="feature-card"
-                  variants={fadeUp}
-                  whileHover={{
-                    y: -8,
-                    borderColor: "#2970FF",
-                    boxShadow: "0 16px 32px -4px rgba(21, 94, 239, 0.12)",
-                    transition: { duration: 0.22 }
-                  }}
-                >
-                  <div className="feature-card-top">
-                    <div className="feature-icon-wrapper">
-                      <Icon size={24} strokeWidth={2.2} />
-                    </div>
-                    <span className="feature-micro-badge">{feature.badge}</span>
-                  </div>
-
-                  <h3 className="feature-title">{feature.title}</h3>
-                  <p className="feature-description">{feature.description}</p>
-                </motion.article>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ====================================================================
-          4. ABOUT SECTION
-          ==================================================================== */}
-      <section className="home-about-section" id="about">
-        <div className="section-container">
-          <div className="about-grid-layout">
-            {/* Left Content */}
-            <motion.div
-              className="about-left-content"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={staggerContainer}
+            <Link
+              to="/client/login"
+              className="navbar-magic-btn"
+              title="Passwordless Magic Link"
             >
-              <motion.span className="section-eyebrow" variants={fadeUp}>
-                ABOUT CLIENTLOCKER
-              </motion.span>
+              <Sparkles size={14} />
+              <span>Magic Link</span>
+            </Link>
 
-              <motion.h2 className="section-heading" variants={fadeUp}>
-                A better way to manage confidential client documents.
-              </motion.h2>
-
-              <motion.p className="about-body-text" variants={fadeUp}>
-                ClientLocker is a private document management portal designed
-                specifically for <strong>Vaigai Vel &amp; Associates</strong>, an
-                accounting firm based in Madurai, Tamil Nadu. It provides a structured,
-                institution-grade platform where the firm and its business clients can
-                safely upload, organize, and access sensitive financial records.
-              </motion.p>
-
-              <motion.p className="about-body-text" variants={fadeUp}>
-                By replacing fragmented email attachments and public shared drives with
-                a centralized, role-governed document vault, ClientLocker ensures that
-                client records remain private, audit-ready, and properly compartmentalized.
-              </motion.p>
-
-              <motion.div className="about-pillars-list" variants={fadeUp}>
-                <div className="pillar-item">
-                  <div className="pillar-check">
-                    <CheckCircle2 size={16} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <strong>Purpose-Built for Accounting</strong>
-                    <span>Designed for tax schedules, statutory audits, and balance sheets.</span>
-                  </div>
-                </div>
-
-                <div className="pillar-item">
-                  <div className="pillar-check">
-                    <CheckCircle2 size={16} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <strong>Controlled Permission Hierarchy</strong>
-                    <span>Strict role isolation between partners, staff, clients, and auditors.</span>
-                  </div>
-                </div>
-
-                <div className="pillar-item">
-                  <div className="pillar-check">
-                    <CheckCircle2 size={16} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <strong>Uncompromising Security</strong>
-                    <span>Server-enforced access checks and comprehensive event logs.</span>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div className="about-cta-link-wrapper" variants={fadeUp}>
-                <Link to="/about" className="about-details-link">
-                  <span>Learn more about Vaigai Vel &amp; Associates</span>
-                  <ArrowRight size={17} strokeWidth={2.4} />
-                </Link>
-              </motion.div>
-            </motion.div>
-
-            {/* Right Visual Element */}
-            <motion.div
-              className="about-right-visual"
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            <Link
+              to="/login"
+              className="navbar-login-btn"
             >
-              <div className="about-visual-card-wrapper">
-                <div className="about-visual-header">
-                  <div className="about-firm-badge">
-                    <Building2 size={20} className="firm-icon" />
-                    <div>
-                      <strong>Vaigai Vel &amp; Associates</strong>
-                      <span>Chartered &amp; Accounting Practice &bull; Madurai</span>
-                    </div>
-                  </div>
-                </div>
+              <span>Sign In</span>
+              <ArrowRight size={16} />
+            </Link>
 
-                <div className="about-roles-matrix">
-                  <div className="matrix-heading">
-                    <Shield size={14} />
-                    <span>Four-Tier Access Architecture</span>
-                  </div>
-
-                  <div className="role-matrix-item">
-                    <span className="role-tag role-partner">Partner</span>
-                    <span className="role-matrix-desc">Full visibility, staff delegation &amp; audit inspection</span>
-                  </div>
-
-                  <div className="role-matrix-item">
-                    <span className="role-tag role-staff">Staff</span>
-                    <span className="role-matrix-desc">Upload, organize &amp; manage assigned client files</span>
-                  </div>
-
-                  <div className="role-matrix-item">
-                    <span className="role-tag role-client">Client</span>
-                    <span className="role-matrix-desc">Direct view &amp; secure download of company documents</span>
-                  </div>
-
-                  <div className="role-matrix-item">
-                    <span className="role-tag role-auditor">Auditor</span>
-                    <span className="role-matrix-desc">Restricted, read-only inspection for statutory compliance</span>
-                  </div>
-                </div>
-
-                <div className="about-visual-footer">
-                  <div className="about-footer-stat">
-                    <FolderLock size={16} />
-                    <span>Centralized Document Vault</span>
-                  </div>
-                  <div className="about-footer-status">
-                    <span className="status-live-dot" />
-                    <span>Enforced via Server Roles</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* ====================================================================
-          5. HOW IT WORKS SECTION
-          ==================================================================== */}
-      <section className="home-workflow-section" id="how-it-works">
-        <div className="section-container">
+          {/* Mobile Menu Toggle */}
+          <button
+            type="button"
+            className="navbar-menu-toggle"
+            onClick={() =>
+              setMobileMenuOpen(!mobileMenuOpen)
+            }
+            aria-label={
+              mobileMenuOpen ? "Close menu" : "Open menu"
+            }
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <X size={22} />
+            ) : (
+              <Menu size={22} />
+            )}
+          </button>
+
+        </div>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              <motion.div
+                className="navbar-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={closeMenu}
+              />
+
+              <motion.nav
+                className="navbar-mobile-menu"
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{
+                  duration: 0.2,
+                  ease: easeOutQuart
+                }}
+              >
+                <Link
+                  to="/"
+                  onClick={closeMenu}
+                  className="active"
+                >
+                  Home
+                </Link>
+
+                <Link
+                  to="/about"
+                  onClick={closeMenu}
+                >
+                  About
+                </Link>
+
+                <a
+                  href="#features"
+                  onClick={closeMenu}
+                >
+                  Features
+                </a>
+
+                <a
+                  href="#contact"
+                  onClick={closeMenu}
+                >
+                  Contact
+                </a>
+
+                <Link
+                  to="/client/login"
+                  onClick={closeMenu}
+                  className="navbar-mobile-magic"
+                >
+                  <Sparkles size={15} />
+                  <span>Client Magic Link</span>
+                </Link>
+
+                <Link
+                  to="/login"
+                  onClick={closeMenu}
+                  className="navbar-mobile-login"
+                >
+                  <span>Sign In</span>
+                  <ArrowRight size={16} />
+                </Link>
+
+              </motion.nav>
+            </>
+          )}
+        </AnimatePresence>
+
+      </header>
+
+
+      {/* =====================================================
+          2. HERO SECTION
+      ===================================================== */}
+
+      <motion.section
+        className="home-hero"
+        id="home"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+      >
+
+        {/* Left Column */}
+        <motion.div
+          className="hero-content"
+          variants={fadeLeft}
+        >
+
           <motion.div
-            className="section-header text-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+            className="hero-badge"
             variants={fadeUp}
           >
-            <span className="section-eyebrow">HOW IT WORKS</span>
-            <h2 className="section-heading">
-              Simple, Secure, and Built for Productivity
-            </h2>
-            <p className="section-description">
-              Three clear steps to manage, protect, and exchange confidential accounting records.
-            </p>
+            <ShieldCheck size={16} />
+            SECURE CLIENT DOCUMENT PORTAL
           </motion.div>
 
-          <div className="workflow-timeline-wrapper">
-            <div className="workflow-timeline-line" aria-hidden="true" />
+          <motion.h1 variants={fadeUp}>
+            Your Documents.
+            <span> Our Priority.</span>
+          </motion.h1>
 
-            <motion.div
-              className="workflow-steps-grid"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={cardStagger}
-            >
-              {workflowSteps.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <motion.div
-                    key={item.step}
-                    className="workflow-step-card"
-                    variants={fadeUp}
-                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                  >
-                    <div className="workflow-card-top">
-                      <span className="workflow-step-number">{item.step}</span>
-                      <div className="workflow-icon-box">
-                        <Icon size={22} strokeWidth={2.4} />
-                      </div>
-                    </div>
+          <motion.p variants={fadeUp}>
+            Manage, organize and access your important
+            business documents through one secure and
+            reliable client portal from Vaigai Vel &
+            Associates.
+          </motion.p>
 
-                    <h3 className="workflow-title">{item.title}</h3>
-                    <p className="workflow-description">{item.description}</p>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ====================================================================
-          6. CALL-TO-ACTION (CTA) SECTION
-          ==================================================================== */}
-      <section className="home-cta-section">
-        <div className="section-container">
           <motion.div
-            className="cta-banner-card"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={staggerContainer}
+            className="hero-buttons"
+            variants={fadeUp}
           >
-            {/* Background glowing rings */}
-            <div className="cta-glow-circle circle-1" aria-hidden="true" />
-            <div className="cta-glow-circle circle-2" aria-hidden="true" />
+            <Link
+              to="/login"
+              className="home-primary-btn"
+            >
+              <span>Access Your Portal</span>
+              <ArrowRight size={17} />
+            </Link>
 
-            <div className="cta-content-wrapper">
-              <motion.div className="cta-badge" variants={fadeUp}>
-                <ShieldCheck size={15} />
-                <span>VAIGAI VEL &amp; ASSOCIATES CLIENT PORTAL</span>
-              </motion.div>
-
-              <motion.h2 className="cta-heading" variants={fadeUp}>
-                Ready to Manage Your Documents Securely?
-              </motion.h2>
-
-              <motion.p className="cta-description" variants={fadeUp}>
-                Experience a more organized and reliable way to manage your business documents.
-              </motion.p>
-
-              <motion.div className="cta-buttons-row" variants={fadeUp}>
-                <Link to="/login" className="btn-cta-primary">
-                  <span>Access Your Portal</span>
-                  <ArrowRight size={18} strokeWidth={2.4} />
-                </Link>
-
-                <Link to="/about" className="btn-cta-secondary">
-                  <span>Firm Overview</span>
-                </Link>
-              </motion.div>
-
-              <motion.div className="cta-security-footnote" variants={fadeUp}>
-                <LockKeyhole size={14} />
-                <span>Protected by 256-bit AES encryption &bull; Authorized credentials required</span>
-              </motion.div>
-            </div>
+            <a
+              href="#about"
+              className="home-secondary-btn"
+            >
+              Discover More
+            </a>
           </motion.div>
+
+          <motion.div
+            className="hero-trust"
+            variants={fadeUp}
+          >
+            <Lock size={16} />
+
+            <span>
+              Private access. Protected documents.
+              Trusted management.
+            </span>
+          </motion.div>
+
+        </motion.div>
+
+
+        {/* Right Column: Document Illustration */}
+        <motion.div
+          className="hero-illustration"
+          variants={fadeRight}
+        >
+
+          {/* Ambient Animation */}
+          <motion.div
+            className="hero-circle"
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.35, 0.65, 0.35]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
+          {/* Document Card */}
+          <motion.div
+            className="hero-document-card"
+            initial={{
+              opacity: 0,
+              y: 70,
+              rotate: 3
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              rotate: 0
+            }}
+            transition={{
+              duration: 0.9,
+              delay: 0.2,
+              ease: easeOutQuart
+            }}
+            whileHover={{
+              y: -4,
+              transition: {
+                duration: 0.25
+              }
+            }}
+          >
+
+            <div className="hero-card-header">
+
+              <div className="hero-card-icon">
+                <FolderLock size={26} />
+              </div>
+
+              <span className="secure-status">
+                <span />
+                SECURE PORTAL
+              </span>
+
+            </div>
+
+            <h3>Document Management</h3>
+
+            <p className="hero-card-description">
+              Your business files, organized and protected.
+            </p>
+
+            {[
+              {
+                title: "Financial Documents",
+                subtitle: "PDF documents"
+              },
+              {
+                title: "Tax Documents",
+                subtitle: "Private files"
+              },
+              {
+                title: "Business Records",
+                subtitle: "Securely managed"
+              }
+            ].map((file, idx) => (
+
+              <motion.div
+                className="hero-file-row"
+                key={file.title}
+                initial={{
+                  opacity: 0,
+                  x: 25
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0
+                }}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.45 + idx * 0.12,
+                  ease: easeOutQuart
+                }}
+              >
+
+                <div className="hero-file-icon">
+                  <FileText size={18} />
+                </div>
+
+                <div>
+                  <strong>{file.title}</strong>
+                  <small>{file.subtitle}</small>
+                </div>
+
+                <CheckCircle2 className="file-check" />
+
+              </motion.div>
+
+            ))}
+
+            <div className="hero-card-footer">
+              <ShieldCheck size={18} />
+              <span>Protected document access</span>
+            </div>
+
+          </motion.div>
+
+
+          {/* Floating Lock Animation */}
+          <motion.div
+            className="hero-floating-lock"
+            animate={{
+              y: [0, -12, 0],
+              rotate: [0, 6, 0]
+            }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Lock size={24} />
+          </motion.div>
+
+        </motion.div>
+
+      </motion.section>
+
+
+      {/* =====================================================
+          3. ABOUT SECTION
+      ===================================================== */}
+
+      <motion.section
+        className="home-about"
+        id="about"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{
+          once: true,
+          amount: 0.25
+        }}
+        variants={staggerContainer}
+      >
+
+        <motion.span
+          className="home-section-label"
+          variants={fadeUp}
+        >
+          ABOUT CLIENTLOCKER
+        </motion.span>
+
+        <motion.h2 variants={fadeUp}>
+          A better way to manage client documents.
+        </motion.h2>
+
+        <motion.p variants={fadeUp}>
+          ClientLocker is a private document management
+          portal designed for Vaigai Vel & Associates.
+          It helps manage client files, control access
+          and organize important business records.
+        </motion.p>
+
+      </motion.section>
+
+
+      {/* =====================================================
+          4. FEATURES SECTION
+      ===================================================== */}
+
+      <motion.section
+        className="home-features"
+        id="features"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{
+          once: true,
+          amount: 0.15
+        }}
+        variants={staggerContainer}
+      >
+
+        <motion.span
+          className="home-section-label"
+          variants={fadeUp}
+        >
+          OUR FEATURES
+        </motion.span>
+
+        <motion.h2 variants={fadeUp}>
+          Everything organized. Everything protected.
+        </motion.h2>
+
+        <motion.p
+          className="features-intro"
+          variants={fadeUp}
+        >
+          A centralized portal designed for secure
+          and organized client document management.
+        </motion.p>
+
+
+        <motion.div
+          className="home-feature-grid"
+          variants={cardContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{
+            once: true,
+            amount: 0.1
+          }}
+        >
+
+          {[
+            {
+              icon: ShieldCheck,
+              title: "Secure Access",
+              description:
+                "Role-based permissions help users access only the documents they are authorized to view."
+            },
+            {
+              icon: FolderLock,
+              title: "Private File Storage",
+              description:
+                "Manage important client documents through private, controlled file access."
+            },
+            {
+              icon: Users,
+              title: "Access Management",
+              description:
+                "Manage staff and client access according to assigned permissions."
+            },
+            {
+              icon: FileCheck,
+              title: "Document Checklist",
+              description:
+                "Organize required documents and track checklist completion for each client."
+            },
+            {
+              icon: Clock,
+              title: "Activity Tracking",
+              description:
+                "Maintain a record of important document activities and access events."
+            },
+            {
+              icon: Download,
+              title: "Controlled Downloads",
+              description:
+                "Access documents through temporary, authorized download links."
+            }
+          ].map((feature) => {
+
+            const Icon = feature.icon;
+
+            return (
+              <motion.article
+                className="home-feature-card"
+                key={feature.title}
+                variants={fadeUp}
+                whileHover={{
+                  y: -8,
+                  transition: {
+                    duration: 0.22,
+                    ease: easeOutQuart
+                  }
+                }}
+              >
+
+                <div className="home-feature-icon">
+                  <Icon size={24} />
+                </div>
+
+                <h3>{feature.title}</h3>
+
+                <p>{feature.description}</p>
+
+              </motion.article>
+            );
+
+          })}
+
+        </motion.div>
+
+      </motion.section>
+
+
+      {/* =====================================================
+          5. CALL TO ACTION
+      ===================================================== */}
+
+      <motion.section
+        className="home-cta"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{
+          once: true,
+          amount: 0.25
+        }}
+        variants={staggerContainer}
+      >
+
+        <motion.div variants={fadeLeft}>
+
+          <span className="home-section-label">
+            CLIENT PORTAL
+          </span>
+
+          <h2>
+            Your documents are just a sign-in away.
+          </h2>
+
+          <p>
+            Access your authorized documents through
+            the ClientLocker portal.
+          </p>
+
+        </motion.div>
+
+
+        <motion.div variants={fadeRight}>
+
+          <Link
+            to="/login"
+            className="home-cta-btn"
+          >
+            <span>Sign In Now</span>
+            <ArrowRight size={18} />
+          </Link>
+
+        </motion.div>
+
+      </motion.section>
+
+
+      {/* =====================================================
+          6. FOOTER
+      ===================================================== */}
+
+      <footer
+        className="main-footer"
+        id="contact"
+      >
+
+        <div className="footer-container">
+
+          {/* Brand */}
+          <div className="footer-brand-section">
+
+            <Link
+              to="/"
+              className="footer-brand"
+              aria-label="ClientLocker Home"
+            >
+
+              <span className="footer-brand-icon">
+                <FolderLock
+                  size={23}
+                  strokeWidth={2.2}
+                />
+              </span>
+
+              <span className="footer-brand-name">
+                Client<span>Locker</span>
+              </span>
+
+            </Link>
+
+            <p className="footer-description">
+              A private client document management
+              portal designed for Vaigai Vel &
+              Associates.
+            </p>
+
+            <div className="footer-security">
+              <ShieldCheck size={18} />
+
+              <span>
+                Secure client document management
+              </span>
+            </div>
+
+          </div>
+
+
+          {/* Quick Links */}
+          <div className="footer-links-section">
+
+            <h3>Quick Links</h3>
+
+            <Link to="/">
+              Home <ArrowRight size={13} />
+            </Link>
+
+            <Link to="/about">
+              About Us <ArrowRight size={13} />
+            </Link>
+
+            <a href="#features">
+              Features <ArrowRight size={13} />
+            </a>
+
+            <Link to="/login">
+              Client Portal <ArrowRight size={13} />
+            </Link>
+
+            <Link to="/client/login">
+              Magic Link Login <ArrowRight size={13} />
+            </Link>
+
+          </div>
+
+
+          {/* Firm Information */}
+          <div className="footer-contact-section">
+
+            <h3>Firm Information</h3>
+
+            <div className="footer-contact-item">
+
+              <ShieldCheck size={18} />
+
+              <div>
+                <strong>Location</strong>
+                <span>Madurai, Tamil Nadu, India</span>
+              </div>
+
+            </div>
+
+            <div className="footer-contact-item">
+
+              <FolderLock size={18} />
+
+              <div>
+                <strong>Organization</strong>
+                <span>Vaigai Vel & Associates</span>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
-      </section>
-    </div>
+
+
+        {/* Footer Bottom */}
+        <div className="footer-bottom">
+
+          <p>
+            © {new Date().getFullYear()} ClientLocker.
+            All rights reserved.
+          </p>
+
+          <p>
+            A secure document management portal.
+          </p>
+
+        </div>
+
+      </footer>
+
+    </main>
   );
 }
 
