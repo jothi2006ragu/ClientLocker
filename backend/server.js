@@ -23,11 +23,18 @@ const checklistRoutes = require("./routes/checklistRoutes");
 const accessRoutes = require("./routes/accessRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 
-// Verify route exports before starting the server.
+// ======================================
+// VERIFY ROUTE EXPORTS
+// ======================================
+
 const routes = [
   ["authRoutes", authRoutes],
   ["demoRoutes", demoRoutes],
-  ["fileRoutes", fileRoutes]
+  ["fileRoutes", fileRoutes],
+  ["clientRoutes", clientRoutes],
+  ["checklistRoutes", checklistRoutes],
+  ["accessRoutes", accessRoutes],
+  ["activityRoutes", activityRoutes]
 ];
 
 for (const [name, route] of routes) {
@@ -44,12 +51,54 @@ for (const [name, route] of routes) {
 
 app.use(helmet());
 
+// ======================================
+// CORS CONFIGURATION
+// ======================================
+
+// Add production and local frontend URLs.
+// FRONTEND_URL can contain multiple comma-separated origins.
+
+const configuredOrigins = (
+  process.env.FRONTEND_URL ||
+  "https://client-locker-liard.vercel.app"
+)
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
+const allowedOrigins = new Set(configuredOrigins);
+
+// Allow localhost only when explicitly enabled.
+if (process.env.ALLOW_LOCAL_FRONTEND === "true") {
+  allowedOrigins.add("http://localhost:5173");
+}
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header, such as server-to-server calls.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedOrigin = origin.replace(/\/+$/, "");
+
+      if (allowedOrigins.has(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      console.warn("CORS blocked origin:", origin);
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204
   })
 );
+
+console.log("Allowed frontend origins:", [...allowedOrigins]);
 
 // ======================================
 // REQUEST PARSING
@@ -117,10 +166,10 @@ app.use("/api", checklistRoutes);
 
 app.use("/api", fileRoutes);
 
-// Available file endpoints:
-// GET  /api/clients/:clientId/files
-// POST /api/clients/:clientId/files
-// GET  /api/files/:id/open
+// ======================================
+// CLIENT MANAGEMENT ROUTES
+// ======================================
+
 app.use("/api", clientRoutes);
 
 // ======================================
@@ -134,6 +183,7 @@ app.use("/api", accessRoutes);
 // ======================================
 
 app.use("/api", activityRoutes);
+
 // ======================================
 // 404 HANDLER
 // ======================================
@@ -154,6 +204,14 @@ app.use((error, req, res, next) => {
 
   if (res.headersSent) {
     return next(error);
+  }
+
+  // CORS errors.
+  if (error.message === "Not allowed by CORS") {
+    return res.status(403).json({
+      success: false,
+      message: "This frontend origin is not allowed."
+    });
   }
 
   // Multer file upload errors.
@@ -215,26 +273,25 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     if (!process.env.MONGO_URI) {
-      throw new Error("MONGO_URI is missing in .env file");
+      throw new Error("MONGO_URI is missing in environment variables");
     }
 
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is missing in .env file");
+      throw new Error("JWT_SECRET is missing in environment variables");
     }
 
     await mongoose.connect(process.env.MONGO_URI);
 
     console.log("MongoDB Atlas connected successfully");
 
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, "0.0.0.0", () => {
       console.log("====================================");
       console.log("CLIENTLOCKER BACKEND STARTED");
       console.log("====================================");
-      console.log(`Server: http://localhost:${PORT}`);
-      console.log(`Health: http://localhost:${PORT}/api/health`);
-      console.log(`Auth: http://localhost:${PORT}/api/auth`);
-      console.log(`Demo: http://localhost:${PORT}/api/demo`);
-      console.log(`Files: http://localhost:${PORT}/api`);
+      console.log(`Port: ${PORT}`);
+      console.log(`Backend: https://clientlocker-24ef.onrender.com`);
+      console.log(`Health: https://clientlocker-24ef.onrender.com/api/health`);
+      console.log(`Frontend: https://client-locker-liard.vercel.app`);
       console.log("====================================");
     });
 
